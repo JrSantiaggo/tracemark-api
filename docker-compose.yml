@@ -28,7 +28,7 @@ services:
     container_name: tracemark-s3
     restart: unless-stopped
     profiles: ["storage"]
-    command: server -dir=/data -s3 -s3.port=8333 -master.volumeSizeLimitMB=64 -volume.max=8
+    command: server -dir=/data -s3 -s3.port=8333 -master.volumeSizeLimitMB=64 -volume.max=0
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?defina AWS_ACCESS_KEY_ID no .env para o emulador local}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?defina AWS_SECRET_ACCESS_KEY no .env para o emulador local}
