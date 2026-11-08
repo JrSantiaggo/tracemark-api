@@ -1,0 +1,109 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  PHOTOGRAPHER
+  USER
+}
+
+enum PhotoStatus {
+  UPLOADING
+  PROCESSING
+  PUBLISHABLE
+  ERROR
+}
+
+enum NotificationType {
+  PHOTO_PUBLISHED
+  PHOTO_PROCESSING_FAILED
+  NEW_COMMENT
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(120)
+  email        String   @unique @db.VarChar(254)
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(USER)
+  bio          String?  @db.VarChar(500)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  photos        Photo[]
+  comments      Comment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Photo {
+  id              String      @id @db.Uuid
+  photographerId  String      @map("photographer_id") @db.Uuid
+  title           String      @db.VarChar(120)
+  description     String?     @db.VarChar(2000)
+  eventName       String?     @map("event_name") @db.VarChar(160)
+  takenAt         DateTime?   @map("taken_at") @db.Timestamptz(3)
+  price           Decimal     @db.Decimal(10, 2)
+  originalKey     String      @unique @map("original_key") @db.VarChar(255)
+  watermarkedKey  String?     @unique @map("watermarked_key") @db.VarChar(255)
+  status          PhotoStatus @default(UPLOADING)
+  mimeType        String      @map("mime_type") @db.VarChar(50)
+  fileSize        Int         @map("file_size")
+  processingError String?     @map("processing_error") @db.VarChar(500)
+  uploadExpiresAt DateTime    @map("upload_expires_at") @db.Timestamptz(3)
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  publishedAt     DateTime?   @map("published_at") @db.Timestamptz(3)
+
+  photographer  User           @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  notifications Notification[]
+
+  @@index([status, publishedAt(sort: Desc), id(sort: Desc)])
+  @@index([photographerId, createdAt(sort: Desc)])
+  @@index([status, uploadExpiresAt])
+  @@map("photos")
+}
+
+model Comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  photoId   String   @map("photo_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String   @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  photo  Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([photoId, createdAt, id])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  photoId   String?          @map("photo_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(160)
+  message   String           @db.VarChar(500)
+  readAt    DateTime?        @map("read_at") @db.Timestamptz(3)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photo Photo? @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([userId, readAt])
+  @@index([photoId])
+  @@map("notifications")
+}

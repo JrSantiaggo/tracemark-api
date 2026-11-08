@@ -1,0 +1,1 @@
+export const PHOTOS_PER_UPLOAD_CEILING = 100;
