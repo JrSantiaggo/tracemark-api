@@ -38,7 +38,7 @@ const envSchema = z.object({
   UPLOAD_URL_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
   DOWNLOAD_URL_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
   ORIGINAL_DOWNLOAD_URL_TTL_SECONDS: z.coerce.number().int().min(10).max(900).default(60),
-  MAX_PHOTOS_PER_UPLOAD: z.coerce.number().int().min(1).max(PHOTOS_PER_UPLOAD_CEILING).default(10),
+  MAX_PHOTOS_PER_UPLOAD: z.coerce.number().int().min(1).max(PHOTOS_PER_UPLOAD_CEILING).default(30),
   MAX_UPLOAD_SIZE_BYTES: z.coerce.number().int().positive().default(15 * 1024 * 1024),
   STALE_UPLOAD_GRACE_MINUTES: z.coerce.number().int().min(0).default(60),
 });

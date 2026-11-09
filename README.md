@@ -35,7 +35,7 @@ npm run smoke                   # valida o fluxo completo contra a API rodando
 ## Funcionalidades
 
 - **Auth:** cadastro (`PHOTOGRAPHER` ou `USER`), login e JWT.
-- **Fotos:** o fotógrafo cria um lote de fotos (até `MAX_PHOTOS_PER_UPLOAD`, padrão 10) e recebe URLs pré-assinadas para enviar os arquivos direto ao S3.
+- **Fotos:** o fotógrafo cria um lote de fotos (até `MAX_PHOTOS_PER_UPLOAD`, padrão 30) e recebe URLs pré-assinadas para enviar os arquivos direto ao S3.
 - **Feed:** apenas fotos publicáveis, paginado. O dono vê a original; os demais, a versão com marca-d'água.
 - **Comentários:** criar, listar e excluir (autor ou dono da foto).
 - **Compras (simulada):** o usuário "compra" uma foto publicada, sem gateway de pagamento, e passa a poder baixar a original por uma URL assinada que expira em 60s.
@@ -103,7 +103,7 @@ Veja [.env.example](.env.example). Principais:
 | `S3_BUCKET`, `AWS_REGION` | Bucket privado das fotos                   |
 | `S3_ENDPOINT`             | Apenas para o emulador local               |
 | `CORS_ORIGINS`            | Origens do frontend                        |
-| `MAX_PHOTOS_PER_UPLOAD`   | Fotos por lote de upload (padrão 10, máx. 100) |
+| `MAX_PHOTOS_PER_UPLOAD`   | Fotos por lote de upload (padrão 30, máx. 100) |
 | `ORIGINAL_DOWNLOAD_URL_TTL_SECONDS` | Validade da URL de download da original (padrão 60s) |
 
 🔒 Em produção, esses valores vêm do **AWS Secrets Manager**, nunca de arquivo `.env`.

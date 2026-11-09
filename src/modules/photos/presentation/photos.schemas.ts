@@ -47,7 +47,7 @@ const createPhotoItemSchema = z.object({
 export const createPhotosSchema = {
   tags: ['Photos'],
   summary: 'Cria um lote de fotografias e devolve URLs pré-assinadas de upload',
-  description: 'O tamanho máximo do lote é definido por MAX_PHOTOS_PER_UPLOAD (padrão 10).',
+  description: 'O tamanho máximo do lote é definido por MAX_PHOTOS_PER_UPLOAD (padrão 30).',
   security: bearerAuth,
   body: z.object({ photos: z.array(createPhotoItemSchema).min(1).max(PHOTOS_PER_UPLOAD_CEILING) }),
   response: { 201: z.object({ data: z.array(photoWithUploadSchema) }), ...errorResponses(400, 401, 403) },
