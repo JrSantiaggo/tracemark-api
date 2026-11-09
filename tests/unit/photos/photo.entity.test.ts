@@ -64,4 +64,13 @@ describe('Photo entity', () => {
       InvalidPhotoStatusTransitionError,
     );
   });
+
+  it.each([
+    ['Chegada', 'original.jpg', 'Chegada.jpg'],
+    ['Largada: km 0 / "elite"', 'original.png', 'Largada km 0 elite.png'],
+    ['  ', 'original.webp', 'tracemark.webp'],
+  ])('builds a safe download file name from %j', (title, file, expected) => {
+    const photo = buildPhoto({ title, originalKey: `photos/${PHOTO_ID}/${file}` });
+    expect(photo.originalFileName()).toBe(expected);
+  });
 });

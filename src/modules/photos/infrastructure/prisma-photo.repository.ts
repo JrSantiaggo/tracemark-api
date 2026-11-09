@@ -10,7 +10,7 @@ import type { PhotoRepository, PhotoWithPhotographer } from '../application/phot
 import { Photo } from '../domain/photo.js';
 import { PhotoStatus } from '../domain/photo-status.js';
 
-const withPhotographer = { photographer: { select: { id: true, name: true } } } as const;
+export const photoWithPhotographerInclude = { photographer: { select: { id: true, name: true } } } as const;
 type PhotoRowWithPhotographer = PhotoRow & { photographer: { id: string; name: string } };
 
 export class PrismaPhotoRepository implements PhotoRepository {
@@ -26,8 +26,8 @@ export class PrismaPhotoRepository implements PhotoRepository {
   }
 
   async findByIdWithPhotographer(id: string): Promise<PhotoWithPhotographer | null> {
-    const row = await this.db.photo.findUnique({ where: { id }, include: withPhotographer });
-    return row && toEntry(row);
+    const row = await this.db.photo.findUnique({ where: { id }, include: photoWithPhotographerInclude });
+    return row && toPhotoEntry(row);
   }
 
   async save(photo: Photo, expectedStatus: PhotoStatus): Promise<boolean> {
@@ -58,11 +58,11 @@ export class PrismaPhotoRepository implements PhotoRepository {
             }
           : {}),
       },
-      include: withPhotographer,
+      include: photoWithPhotographerInclude,
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: page.limit + 1,
     });
-    return buildPage(rows, page.limit, toEntry, (row) => encodeTimestampCursor(row.createdAt, row.id));
+    return buildPage(rows, page.limit, toPhotoEntry, (row) => encodeTimestampCursor(row.createdAt, row.id));
   }
 
   async listPublishable(page: PageRequest): Promise<Page<PhotoWithPhotographer>> {
@@ -79,11 +79,11 @@ export class PrismaPhotoRepository implements PhotoRepository {
             }
           : {}),
       },
-      include: withPhotographer,
+      include: photoWithPhotographerInclude,
       orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
       take: page.limit + 1,
     });
-    return buildPage(rows, page.limit, toEntry, (row) =>
+    return buildPage(rows, page.limit, toPhotoEntry, (row) =>
       encodeTimestampCursor(row.publishedAt ?? row.createdAt, row.id),
     );
   }
@@ -97,7 +97,7 @@ export class PrismaPhotoRepository implements PhotoRepository {
   }
 }
 
-function toEntry(row: PhotoRowWithPhotographer): PhotoWithPhotographer {
+export function toPhotoEntry(row: PhotoRowWithPhotographer): PhotoWithPhotographer {
   return { photo: toDomain(row), photographer: row.photographer };
 }
 

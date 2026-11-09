@@ -1,5 +1,6 @@
 import type {
   CreatePresignedUploadInput,
+  DownloadUrlOptions,
   PresignedUpload,
   SignedDownloadUrl,
   StorageGateway,
@@ -25,9 +26,16 @@ export class FakeStorageGateway implements StorageGateway {
     return this.objects.get(key) ?? null;
   }
 
-  async createDownloadUrl(key: string, expiresInSeconds: number): Promise<SignedDownloadUrl> {
+  async createDownloadUrl(
+    key: string,
+    expiresInSeconds: number,
+    options: DownloadUrlOptions = {},
+  ): Promise<SignedDownloadUrl> {
+    const attachment = options.attachmentFileName
+      ? `&attachment=${encodeURIComponent(options.attachmentFileName)}`
+      : '';
     return {
-      url: `${FAKE_STORAGE_URL}/${key}?signature=fake`,
+      url: `${FAKE_STORAGE_URL}/${key}?signature=fake${attachment}`,
       expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
     };
   }

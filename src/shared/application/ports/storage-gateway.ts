@@ -21,8 +21,12 @@ export interface CreatePresignedUploadInput {
   expiresInSeconds: number;
 }
 
+export interface DownloadUrlOptions {
+  attachmentFileName?: string;
+}
+
 export interface StorageGateway {
   createPresignedUpload(input: CreatePresignedUploadInput): Promise<PresignedUpload>;
   getObjectMetadata(key: string): Promise<StoredObjectMetadata | null>;
-  createDownloadUrl(key: string, expiresInSeconds: number): Promise<SignedDownloadUrl>;
+  createDownloadUrl(key: string, expiresInSeconds: number, options?: DownloadUrlOptions): Promise<SignedDownloadUrl>;
 }

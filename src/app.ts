@@ -18,6 +18,7 @@ import { commentsRoutes } from './modules/comments/presentation/comments.routes.
 import { feedRoutes } from './modules/feed/presentation/feed.routes.js';
 import { notificationsRoutes } from './modules/notifications/presentation/notifications.routes.js';
 import { internalPhotosRoutes, photosRoutes } from './modules/photos/presentation/photos.routes.js';
+import { purchasesRoutes } from './modules/purchases/presentation/purchases.routes.js';
 import { usersRoutes } from './modules/users/presentation/users.routes.js';
 import type { PasswordHasher } from './shared/application/ports/password-hasher.js';
 import type { StorageGateway } from './shared/application/ports/storage-gateway.js';
@@ -99,6 +100,7 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   await app.register(photosRoutes(controllers.photos, guards), { prefix: '/photos' });
   await app.register(feedRoutes(controllers.feed, guards), { prefix: '/feed' });
   await app.register(commentsRoutes(controllers.comments, guards));
+  await app.register(purchasesRoutes(controllers.purchases, guards));
   await app.register(notificationsRoutes(controllers.notifications, guards), { prefix: '/notifications' });
   await app.register(internalPhotosRoutes(controllers.photos, guards), { prefix: '/internal/photos' });
 

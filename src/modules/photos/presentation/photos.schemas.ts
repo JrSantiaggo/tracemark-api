@@ -6,6 +6,7 @@ import {
   bearerAuth,
   errorResponses,
   idParamSchema,
+  isoDateTime,
   pageResponseSchema,
   paginationQuerySchema,
 } from '../../../shared/presentation/http-schemas.js';
@@ -82,7 +83,10 @@ export const getPhotoDetailsSchema = {
   security: bearerAuth,
   params: idParamSchema,
   response: {
-    200: photoSchema.extend({ comments: pageResponseSchema(commentSchema) }),
+    200: photoSchema.extend({
+      purchasedAt: isoDateTime.nullable().describe('Data da compra pelo solicitante, ou null'),
+      comments: pageResponseSchema(commentSchema),
+    }),
     ...errorResponses(400, 401, 404),
   },
 };

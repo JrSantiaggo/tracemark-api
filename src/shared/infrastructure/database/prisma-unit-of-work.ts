@@ -2,6 +2,7 @@ import type { TransactionalRepositories, UnitOfWork } from '../../application/un
 import { PrismaCommentRepository } from '../../../modules/comments/infrastructure/prisma-comment.repository.js';
 import { PrismaNotificationRepository } from '../../../modules/notifications/infrastructure/prisma-notification.repository.js';
 import { PrismaPhotoRepository } from '../../../modules/photos/infrastructure/prisma-photo.repository.js';
+import { PrismaPurchaseRepository } from '../../../modules/purchases/infrastructure/prisma-purchase.repository.js';
 import type { PrismaClient } from './prisma-client.js';
 
 export class PrismaUnitOfWork implements UnitOfWork {
@@ -13,6 +14,7 @@ export class PrismaUnitOfWork implements UnitOfWork {
         photos: new PrismaPhotoRepository(tx),
         comments: new PrismaCommentRepository(tx),
         notifications: new PrismaNotificationRepository(tx),
+        purchases: new PrismaPurchaseRepository(tx),
       }),
     );
   }

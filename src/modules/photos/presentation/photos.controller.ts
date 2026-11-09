@@ -65,6 +65,7 @@ export class PhotosController {
     const details = await this.useCases.getPhotoDetails.execute(getActor(request), request.params.id);
     return reply.send({
       ...presentPhoto(details),
+      purchasedAt: details.purchasedAt?.toISOString() ?? null,
       comments: { data: details.comments.items.map(presentComment), nextCursor: details.comments.nextCursor },
     });
   };

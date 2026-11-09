@@ -3,6 +3,7 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type {
   CreatePresignedUploadInput,
+  DownloadUrlOptions,
   PresignedUpload,
   SignedDownloadUrl,
   StorageGateway,
@@ -52,14 +53,26 @@ export class S3StorageGateway implements StorageGateway {
     }
   }
 
-  async createDownloadUrl(key: string, expiresInSeconds: number): Promise<SignedDownloadUrl> {
-    const url = await getSignedUrl(
-      this.client,
-      new GetObjectCommand({ Bucket: this.config.bucket, Key: key }),
-      { expiresIn: expiresInSeconds },
-    );
+  async createDownloadUrl(
+    key: string,
+    expiresInSeconds: number,
+    options: DownloadUrlOptions = {},
+  ): Promise<SignedDownloadUrl> {
+    const command = new GetObjectCommand({
+      Bucket: this.config.bucket,
+      Key: key,
+      ...(options.attachmentFileName
+        ? { ResponseContentDisposition: attachmentDisposition(options.attachmentFileName) }
+        : {}),
+    });
+    const url = await getSignedUrl(this.client, command, { expiresIn: expiresInSeconds });
     return { url, expiresAt: secondsFromNow(expiresInSeconds) };
   }
+}
+
+function attachmentDisposition(fileName: string): string {
+  const asciiFallback = fileName.normalize('NFKD').replace(/[^\x20-\x7e]/g, '').replace(/["\\]/g, '');
+  return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(fileName)}`;
 }
 
 function secondsFromNow(seconds: number): Date {

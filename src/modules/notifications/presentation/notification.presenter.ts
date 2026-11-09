@@ -9,6 +9,7 @@ export const notificationSchema = z
       NotificationType.PHOTO_PUBLISHED,
       NotificationType.PHOTO_PROCESSING_FAILED,
       NotificationType.NEW_COMMENT,
+      NotificationType.PHOTO_SOLD,
     ]),
     title: z.string(),
     message: z.string(),

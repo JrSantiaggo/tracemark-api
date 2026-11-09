@@ -90,6 +90,10 @@ export class Photo {
     return this.props.title;
   }
 
+  get price(): string {
+    return this.props.price;
+  }
+
   toSnapshot(): Readonly<PhotoProps> {
     return { ...this.props };
   }
@@ -109,6 +113,16 @@ export class Photo {
   hasOriginalInStorage(): boolean {
     if (this.props.status === PhotoStatus.UPLOADING) return false;
     return this.props.processingError !== PhotoFailureReason.UPLOAD_EXPIRED;
+  }
+
+  originalFileName(): string {
+    const extension = this.props.originalKey.split('.').pop();
+    const baseName = this.props.title
+      .replace(/[\\/:*?"<>|\p{Cc}]+/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 100);
+    return `${baseName || 'tracemark'}.${extension}`;
   }
 
   renewUploadWindow(expiresAt: Date): void {

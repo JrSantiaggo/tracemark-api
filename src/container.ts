@@ -25,6 +25,11 @@ import { ListMyPhotosUseCase } from './modules/photos/application/use-cases/list
 import { RenewUploadUrlUseCase } from './modules/photos/application/use-cases/renew-upload-url.use-case.js';
 import { PrismaPhotoRepository } from './modules/photos/infrastructure/prisma-photo.repository.js';
 import { PhotosController } from './modules/photos/presentation/photos.controller.js';
+import { GetOriginalDownloadUseCase } from './modules/purchases/application/use-cases/get-original-download.use-case.js';
+import { ListMyPurchasesUseCase } from './modules/purchases/application/use-cases/list-my-purchases.use-case.js';
+import { PurchasePhotoUseCase } from './modules/purchases/application/use-cases/purchase-photo.use-case.js';
+import { PrismaPurchaseRepository } from './modules/purchases/infrastructure/prisma-purchase.repository.js';
+import { PurchasesController } from './modules/purchases/presentation/purchases.controller.js';
 import { GetPublicProfileUseCase } from './modules/users/application/use-cases/get-public-profile.use-case.js';
 import { UpdateMyProfileUseCase } from './modules/users/application/use-cases/update-my-profile.use-case.js';
 import { PrismaUserRepository } from './modules/users/infrastructure/prisma-user.repository.js';
@@ -54,6 +59,7 @@ export function createContainer({ env, prisma, storage, passwordHasher }: Contai
   const photos = new PrismaPhotoRepository(prisma);
   const comments = new PrismaCommentRepository(prisma);
   const notifications = new PrismaNotificationRepository(prisma);
+  const purchases = new PrismaPurchaseRepository(prisma);
   const unitOfWork = new PrismaUnitOfWork(prisma);
 
   const hasher = passwordHasher ?? new Argon2PasswordHasher();
@@ -83,7 +89,7 @@ export function createContainer({ env, prisma, storage, passwordHasher }: Contai
         renewUploadUrl: new RenewUploadUrlUseCase(photos, storage, env.UPLOAD_URL_TTL_SECONDS),
         confirmUpload: new ConfirmUploadUseCase(photos, storage, images),
         listMyPhotos: new ListMyPhotosUseCase(photos, images),
-        getPhotoDetails: new GetPhotoDetailsUseCase(photos, comments, images, COMMENTS_PAGE_SIZE_IN_DETAILS),
+        getPhotoDetails: new GetPhotoDetailsUseCase(photos, comments, purchases, images, COMMENTS_PAGE_SIZE_IN_DETAILS),
         applyProcessingResult: new ApplyProcessingResultUseCase(unitOfWork),
       }),
       feed: new FeedController(new ListFeedUseCase(photos, images)),
@@ -91,6 +97,16 @@ export function createContainer({ env, prisma, storage, passwordHasher }: Contai
         createComment: new CreateCommentUseCase(unitOfWork),
         listPhotoComments: new ListPhotoCommentsUseCase(photos, comments),
         deleteComment: new DeleteCommentUseCase(photos, comments),
+      }),
+      purchases: new PurchasesController({
+        purchasePhoto: new PurchasePhotoUseCase(unitOfWork),
+        getOriginalDownload: new GetOriginalDownloadUseCase(
+          photos,
+          purchases,
+          storage,
+          env.ORIGINAL_DOWNLOAD_URL_TTL_SECONDS,
+        ),
+        listMyPurchases: new ListMyPurchasesUseCase(purchases, images),
       }),
       notifications: new NotificationsController({
         listNotifications: new ListNotificationsUseCase(notifications),

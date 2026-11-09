@@ -26,7 +26,7 @@ export async function destroyTestContext({ app, prisma }: TestContext): Promise<
 
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "notifications", "comments", "photos", "users" RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE "purchases", "notifications", "comments", "photos", "users" RESTART IDENTITY CASCADE',
   );
 }
 

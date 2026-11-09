@@ -2,6 +2,7 @@ export const NotificationType = {
   PHOTO_PUBLISHED: 'PHOTO_PUBLISHED',
   PHOTO_PROCESSING_FAILED: 'PHOTO_PROCESSING_FAILED',
   NEW_COMMENT: 'NEW_COMMENT',
+  PHOTO_SOLD: 'PHOTO_SOLD',
 } as const;
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
@@ -50,6 +51,16 @@ export const NotificationFactory = {
       type: NotificationType.NEW_COMMENT,
       title: 'Novo comentário',
       message: `${authorName} comentou na sua fotografia "${photo.title}".`,
+    };
+  },
+
+  photoSold(photo: { id: string; photographerId: string; title: string }, buyerName: string): NewNotification {
+    return {
+      userId: photo.photographerId,
+      photoId: photo.id,
+      type: NotificationType.PHOTO_SOLD,
+      title: 'Nova venda',
+      message: `${buyerName} comprou sua fotografia "${photo.title}".`,
     };
   },
 };

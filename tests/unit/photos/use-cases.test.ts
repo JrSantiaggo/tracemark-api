@@ -93,7 +93,7 @@ describe('photo use cases', () => {
         },
       } as unknown as NotificationRepository;
       unitOfWork = {
-        execute: (work) => work({ photos, notifications, comments: {} as never }),
+        execute: (work) => work({ photos, notifications, comments: {} as never, purchases: {} as never }),
       };
     });
 
